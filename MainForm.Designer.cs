@@ -51,8 +51,6 @@ namespace CheckFormatFile
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.btn_Exit = new System.Windows.Forms.Button();
             this.btn_OpenFile = new System.Windows.Forms.Button();
-            this.txt_FileIgnor = new System.Windows.Forms.TextBox();
-            this.label3 = new System.Windows.Forms.Label();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.label2 = new System.Windows.Forms.Label();
             this.groupBox2.SuspendLayout();
@@ -165,13 +163,12 @@ namespace CheckFormatFile
             this.btn_FormatFile.TabIndex = 1;
             this.btn_FormatFile.Text = "Start";
             this.btn_FormatFile.UseVisualStyleBackColor = true;
+            this.btn_FormatFile.Click += new System.EventHandler(this.btn_FormatFile_Click);
             // 
             // groupBox1
             // 
             this.groupBox1.Controls.Add(this.btn_Exit);
             this.groupBox1.Controls.Add(this.btn_OpenFile);
-            this.groupBox1.Controls.Add(this.txt_FileIgnor);
-            this.groupBox1.Controls.Add(this.label3);
             this.groupBox1.Controls.Add(this.comboBox1);
             this.groupBox1.Controls.Add(this.label2);
             this.groupBox1.Controls.Add(this.btn_FormatFile);
@@ -205,33 +202,14 @@ namespace CheckFormatFile
             this.btn_OpenFile.Text = "Open File";
             this.btn_OpenFile.UseVisualStyleBackColor = true;
             // 
-            // txt_FileIgnor
-            // 
-            this.txt_FileIgnor.Location = new System.Drawing.Point(124, 91);
-            this.txt_FileIgnor.Margin = new System.Windows.Forms.Padding(4);
-            this.txt_FileIgnor.Multiline = true;
-            this.txt_FileIgnor.Name = "txt_FileIgnor";
-            this.txt_FileIgnor.Size = new System.Drawing.Size(331, 52);
-            this.txt_FileIgnor.TabIndex = 5;
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(9, 101);
-            this.label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(88, 16);
-            this.label3.TabIndex = 4;
-            this.label3.Text = "Extends Ignor";
-            // 
             // comboBox1
             // 
             this.comboBox1.FormattingEnabled = true;
             this.comboBox1.Items.AddRange(new object[] {
             "Unicode",
-            "UTF8-BOM",
-            "UTF7",
-            "UTF8"});
+            "UTF8withBOM",
+            "UTF8withoutBOM",
+            "UTF7"});
             this.comboBox1.Location = new System.Drawing.Point(124, 36);
             this.comboBox1.Margin = new System.Windows.Forms.Padding(4);
             this.comboBox1.Name = "comboBox1";
@@ -279,8 +257,6 @@ namespace CheckFormatFile
         private System.Windows.Forms.Button btn_checkCRLF;
         private System.Windows.Forms.Button btn_FormatFile;
         private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.TextBox txt_FileIgnor;
-        private System.Windows.Forms.Label label3;
         private System.Windows.Forms.ComboBox comboBox1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox txt_Result;
