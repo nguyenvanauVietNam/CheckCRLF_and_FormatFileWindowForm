@@ -8,217 +8,371 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Configuration;
+using System.Threading;
+using System.Diagnostics;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace CheckFormatFile
 {
     public partial class MainForm : Form
     {
+
         public MainForm()
         {
+
             InitializeComponent();
-            treeView_Seletect.AfterSelect += TreeView1_AfterSelect;
-            //ghi log file
-            string logFilePath = @"AppsLog.txt";
-            l_logger = new Logger(logFilePath);
-            l_logger.Log(@"Start log");
+            treeView_Seletect.AfterSelect += TreeView1_AfterSelect; // Make sure to add this line
 
-            //hiển thị cây thư mục
-            l_txtSelectFolder.Text = @"D:\\";
+            // Initialize log directory
+            string logFolderPath = Path.Combine(Application.StartupPath, "ApplicationLog");
+            EnsureLogDirectoryExists(logFolderPath);
 
+            // Create log file paths
+            string timestampSuffix = DateTime.Now.ToString("yyyyMMdd_HHmmss");
+            string logFilePath = $"ApplicationLog/AppsLog_{timestampSuffix}.txt";
+            string logFilePathCRLF = $"ApplicationLog/AppsLogCRLF_{timestampSuffix}.txt";
+            string logFilePath_NOT_CRLF = $"ApplicationLog/AppsLogNOTCRLF_{timestampSuffix}.txt";
+            string logFilePath_FormatFile = $"ApplicationLog/AppsLogFormatFile_{timestampSuffix}.txt";
+            string logFilePath_NotUTF8 = $"ApplicationLog/AppsLogFormatNotFile_{timestampSuffix}.txt";
+
+            // Create logger instances
+            l_logger_Fuction = new Logger(logFilePath);
+            l_logger_CRLF = new Logger(logFilePathCRLF);
+            l_logger_Not_CRLF = new Logger(logFilePath_NOT_CRLF);
+            l_logger_UTF8 = new Logger(logFilePath_FormatFile);
+            l_logger_Not_UTF8 = new Logger(logFilePath_NotUTF8);
+
+            // Log application start
+            string appVersion = Application.ProductVersion;
+            LogStartApplication(appVersion);
+
+
+            //cài đặt tooltips
+            toolTip = new System.Windows.Forms.ToolTip();
+            toolTip.SetToolTip(btn_CRLF_OpenFile, "Chọn file cần check CRLF. \n Ứng dụng sẽ tự động thực hiện chức năng check CRLF");
+            toolTip.SetToolTip(btn_checkCRLF, "Chọn Folder cần check CRLF trên Treeview sau đó nhấn vào tôi để thực hiện.");
+            toolTip.SetToolTip(btn_OpenLog, "Mở thư mục ghi log để check kết quả check CRLF hoặc kết quả check Endcoding File.");
+
+            //Cài đặt Combobox
+            comboBox1.SelectedIndex = 1;
+            // Đặt kiểu DropDown cho ComboBox thành DropDownList
+            comboBox1.DropDownStyle = ComboBoxStyle.DropDownList;
+
+            // Initialize tree view
+            l_txtSelectFolder.Text = @"D:\";
             ShowTreeView(l_txtSelectFolder.Text, treeView_Seletect.Nodes);
         }
 
-        private void MainForm_Load(object sender, EventArgs e)
+        private void LogStartApplication(string appVersion)
         {
-
+            l_logger_Fuction.Log($"Start application version {appVersion}");
+            l_logger_CRLF.Log($"Start application version {appVersion}");
+            l_logger_Not_CRLF.Log($"Start application version {appVersion}");
+            l_logger_UTF8.Log($"Start application version {appVersion}");
+            l_logger_Not_UTF8.Log($"Start application version {appVersion}");
         }
 
-        private void ShowTreeView(string duongDan, TreeNodeCollection nodes)
+        private void ShowTreeView(string folderPath, TreeNodeCollection nodes)
         {
-            // Tạo một TreeNode cho thư mục hiện tại
-            TreeNode currentNode = new TreeNode(Path.GetFileName(duongDan));
-            currentNode.Tag = duongDan; // Lưu trữ đường dẫn trong Tag
-
-            // Thêm nút vào TreeView
-            nodes.Add(currentNode);
-
             try
             {
-                // Lấy danh sách thư mục con
-                string[] thuMucCon = Directory.GetDirectories(duongDan);
-
-                // Duyệt qua từng thư mục con và gọi đệ quy
-                foreach (string thuMuc in thuMucCon)
+                TreeNode currentNode = new TreeNode(Path.GetFileName(folderPath))
                 {
-                    ShowTreeView(thuMuc, currentNode.Nodes);
+                    Tag = folderPath
+                };
+                nodes.Add(currentNode);
+
+                foreach (string subFolder in Directory.GetDirectories(folderPath))
+                {
+                    ShowTreeView(subFolder, currentNode.Nodes);
                 }
             }
             catch (UnauthorizedAccessException)
             {
-                // Xử lý nếu không có quyền truy cập vào một số thư mục
-                currentNode.Nodes.Add("Không có quyền truy cập");
+                nodes.Add("Not have access");
             }
             catch (Exception ex)
             {
-                // Xử lý các ngoại lệ khác nếu cần
-                currentNode.Nodes.Add("Lỗi: " + ex.Message);
+                nodes.Add($"Errors: {ex.Message}");
             }
         }
 
         private void TreeView1_AfterSelect(object sender, TreeViewEventArgs e)
         {
-            // Lấy đường dẫn từ Tag của TreeNode đã chọn
-            string duongDan = e.Node.Tag as string;
-
-            // Hiển thị đường dẫn trong TextBox
-            if (duongDan != null)
-            {
-                l_txtSelectFolder.Text = duongDan;
-            }
+            string selectedPath = e.Node.Tag as string;
+            l_txtSelectFolder.Text = selectedPath ?? "";
         }
-
 
         private void textBoxSelete_KeyPress(object sender, KeyPressEventArgs e)
         {
             if (e.KeyChar == (char)Keys.Enter)
             {
-                try
-                {
-                    ShowTreeView(l_txtSelectFolder.Text, treeView_Seletect.Nodes);
-                    e.Handled = true; // Ngăn chặn ký tự Enter xuất hiện trong TextBox
-                }catch(Exception ex)
-                {
-                    l_logger.Log(ex.Message.ToString());
-                }
-
+                e.Handled = true;
+                UpdateTreeView();
             }
         }
 
-        private  void textBoxSelete_KeyDown(object sender, KeyEventArgs e)
+        private void textBoxSelete_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter)
             {
-                // Xử lý khi Enter được nhấn trong TextBox
-                // Gọi hàm hoặc thực hiện các công việc cần thiết ở đây
-                try
-                {
-                    ShowTreeView(l_txtSelectFolder.Text, treeView_Seletect.Nodes);
-                    e.SuppressKeyPress = true; // Ngăn chặn ký tự Enter xuất hiện trong TextBox
-                }
-                catch (Exception ex)
-                {
-                    l_logger.Log(ex.Message.ToString());
-                }
-              
+                e.SuppressKeyPress = true;
+                UpdateTreeView();
             }
         }
 
-        private async void btn_checkCRLF_Click(object sender, EventArgs e)
-        {
-            // Sử dụng Task.Run để chạy kiểm tra trong một thread nền
-            await Task.Run(() => CheckCRLFInFiles(l_txtSelectFolder.Text));
-        }
-        private void CheckCRLFInFiles(string folderPath)
+        private void UpdateTreeView()
         {
             try
             {
-                // Đặt giá trị tối đa của ProgressBar
-                SetProgressBarMaximum(Directory.GetFiles(folderPath, "*", SearchOption.AllDirectories).Length);
+                ShowTreeView(l_txtSelectFolder.Text, treeView_Seletect.Nodes);
+            }
+            catch (Exception ex)
+            {
+                l_logger_Fuction.Log($"exception error: {ex.Message}");
+            }
+        }
 
-                // Đặt giá trị bước tăng của ProgressBar
-                SetProgressBarStep(1);
+        private void btn_checkCRLF_Click(object sender, EventArgs e)
+        {
+            string[] extensions = ConfigurationManager.AppSettings["AllowedExtensions"].Split(',');
 
-                // Duyệt qua tất cả các file trong thư mục và thư mục con
-                foreach (string filePath in Directory.GetFiles(folderPath, "*", SearchOption.AllDirectories))
+            CheckCRLFInFolder(l_txtSelectFolder.Text);
+            l_logger_Fuction.Log($"CRLF check completed");
+            l_logger_Not_CRLF.Log($" check completed");
+            l_logger_CRLF.Log($" check completed");
+
+        }
+
+        private void CheckCRLFInFolder(string folderPath)
+        { 
+            try
+            {
+                // Get all files in the current folder and its subfolders with specified extensions
+                string[] files = Directory.GetFiles(folderPath, "*.*", SearchOption.AllDirectories);
+
+                int totalFiles = files.Length;
+                l_logger_Fuction.Log($"Start check CRLF with Total File: {totalFiles.ToString()}");
+                //Xóa Text trước đó
+                txt_Result.Text = string.Empty;
+               txt_Result.Text = $"Start check folder: {folderPath}\r\n";
+                txt_Result.Text += $"Total Files: {totalFiles.ToString()}\r\n";
+
+                int l_SumFileCRLF = 0;
+                int l_SumFileLF = 0;
+                SetProgressBarMaximum();
+
+                int percent = 0;
+
+                foreach (string filePath in files)
                 {
-                    // Kiểm tra dòng mới trong file
                     bool containsCRLF = File.ReadAllText(filePath).Contains("\r\n");
+                    SetProgressBarValue((percent*100/ totalFiles));
 
-                    // Hiển thị kết quả
                     if (containsCRLF)
                     {
-                        AddItemToListBox($"File: {filePath} contains CRLF");
+                        l_logger_CRLF.Log($"File CRLF:  {filePath} contains CRLF");
+                        l_SumFileCRLF++;
                     }
                     else
                     {
-                        AddItemToListBox($"File: {filePath} does not contain CRLF \r\n");
-
-                        // Nếu file không chứa CRLF, thêm đường dẫn vào TextBox
-                        //AppendTextToTextBox(textBoxFilesWithoutCRLF, filePath + Environment.NewLine);
+                        try
+                        {
+                            // Đọc từng dòng và xử lý
+                            ProcessFile(filePath);
+                            l_logger_CRLF.Log($"Fixed file: {filePath} by adding CRLF");
+                        }
+                        catch (Exception ex)
+                        {
+                            l_logger_CRLF.Log($"Lỗi: {ex.Message}");
+                        }
+                        l_SumFileLF++;
                     }
 
-                    // Tăng giá trị của ProgressBar
                     IncrementProgressBar();
+                    percent++;
                 }
 
-                // Đặt giá trị về 0 sau khi kiểm tra hoàn thành
+                txt_Result.Text += $"Files CRLF: {l_SumFileCRLF.ToString()}\r\n";
+                txt_Result.Text += $"Files NOT CRLF: {l_SumFileLF.ToString()}\r\n";
+                //đặt lại về ban đầu
+                l_SumFileCRLF = 0;
+                l_SumFileLF = 0;
                 SetProgressBarValue(0);
             }
             catch (Exception ex)
             {
-                l_logger.Log($"Error: {ex.Message}");
+                MessageBox.Show(this,"Please choose folder small!","Information",MessageBoxButtons.OK,MessageBoxIcon.Error);
+                l_logger_Fuction.Log($"Error: {ex.Message}");
             }
         }
 
-        private void SetProgressBarMaximum(int maximum)
+        private void SetProgressBarMaximum()
         {
-            if (progressBar1.InvokeRequired)
-            {
-                progressBar1.Invoke(new Action(() => progressBar1.Maximum = maximum));
-            }
-            else
-            {
-                progressBar1.Maximum = maximum;
-            }
-        }
-
-        private void SetProgressBarStep(int step)
-        {
-            if (progressBar1.InvokeRequired)
-            {
-                progressBar1.Invoke(new Action(() => progressBar1.Step = step));
-            }
-            else
-            {
-                progressBar1.Step = step;
-            }
+              progressBar1.Maximum = 100;
         }
 
         private void IncrementProgressBar()
         {
-            if (progressBar1.InvokeRequired)
-            {
-                progressBar1.Invoke(new Action(() => progressBar1.PerformStep()));
-            }
-            else
-            {
                 progressBar1.PerformStep();
-            }
         }
 
         private void SetProgressBarValue(int value)
         {
-            if (progressBar1.InvokeRequired)
-            {
-                progressBar1.Invoke(new Action(() => progressBar1.Value = value));
-            }
-            else
-            {
                 progressBar1.Value = value;
+        }
+
+
+        private void btn_Exit_Click(object sender, EventArgs e)
+        {
+            l_logger_Fuction.Log($"Application click button Exit");
+            Application.Exit();
+        }
+
+        private void EnsureLogDirectoryExists(string logFolderPath)
+        {
+            if (!Directory.Exists(logFolderPath))
+            {
+                Directory.CreateDirectory(logFolderPath);
+            }
+        }
+        static void ProcessFile(string filePath)
+        {
+            // Tạo một tệp tạm để lưu trữ kết quả
+            string tempFilePath = Path.GetTempFileName();
+
+            try
+            {
+                using (var reader = new StreamReader(filePath))
+                using (var writer = new StreamWriter(tempFilePath))
+                {
+                    string line;
+                    while ((line = reader.ReadLine()) != null)
+                    {
+                        // Chuyển đổi dòng và ghi vào tệp tạm
+                        string convertedLine = ConvertToCRLF(line);
+                        writer.WriteLine(convertedLine);
+                    }
+                }
+
+                // Sau khi xử lý hết file, thay thế file gốc bằng file tạm
+                File.Copy(tempFilePath, filePath, true);
+            }
+            finally
+            {
+                // Xóa tệp tạm sau khi sử dụng
+                File.Delete(tempFilePath);
+            }
+        }
+        static string ConvertToCRLF(string input)
+        {
+            // Dùng StringBuilder để tối ưu hiệu suất khi thực hiện các thao tác chuỗi
+            StringBuilder result = new StringBuilder();
+
+            // Duyệt qua từng ký tự trong chuỗi đầu vào
+            for (int i = 0; i < input.Length; i++)
+            {
+                // Nếu là ký tự xuống dòng không phải CRLF, thì thêm CRLF vào kết quả
+                if (input[i] == '\n' && (i == 0 || input[i - 1] != '\r'))
+                {
+                    result.Append("\r\n");
+                }
+                // Ngược lại, thêm ký tự vào kết quả
+                else
+                {
+                    result.Append(input[i]);
+                }
+            }
+
+            return result.ToString();
+        }
+
+
+        private void CheckCRLFFile(string filePath)
+        {
+            SetProgressBarValue(1);
+            //Xóa Text trước đó
+            txt_Result.Text = string.Empty;
+            txt_Result.Text = $"Start check file: {Path.GetFileName(filePath)}\r\n";
+            try { 
+                bool containsCRLF = File.ReadAllText(filePath).Contains("\r\n");
+                if (containsCRLF)
+                {
+                    l_logger_CRLF.Log($"File CRLF:  {filePath} contains CRLF");
+                    txt_Result.Text += $"{Path.GetFileName(filePath)} contains CRLF\n";
+                }
+                else
+                {
+                    try
+                    {
+                        txt_Result.Text += $"{Path.GetFileName(filePath)} not CRLF\r\n";
+                        // Đọc từng dòng và xử lý
+                        ProcessFile(filePath);
+                        l_logger_CRLF.Log($"Fixed file: {filePath} by adding CRLF");
+                    }
+                    catch (Exception ex)
+                    {
+                        l_logger_CRLF.Log($"Lỗi: {ex.Message}");
+                    }
+
+                }
+
+            }catch(Exception ex)
+            { 
+                l_logger_Fuction.Log($"Error check CRLF with Exception:{ex.Message}"); 
+            }
+            SetProgressBarValue(50);
+            Thread.Sleep(1000);
+            SetProgressBarValue(100);
+        }
+        private void btn_CRLF_OpenFile_Click(object sender, EventArgs e)
+        {
+            // Tạo hộp thoại mở file
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            // Thiết lập các thuộc tính của hộp thoại mở file
+            openFileDialog.Filter = "Text Files (*.txt)|*.txt|All Files (*.*)|*.*";
+            openFileDialog.Title = "Select a file to process";
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                // Lấy đường dẫn của file đã chọn
+                string selectedFilePath = openFileDialog.FileName;
+                // Xử lý file đã chọn
+                l_logger_Fuction.Log($"Start check CRLF with File: {selectedFilePath}");
+                CheckCRLFFile(selectedFilePath);
+                l_logger_Fuction.Log($"End check CRLF with File: {selectedFilePath}");
             }
         }
 
-        private void AddItemToListBox(string item)
+        private void btn_OpenLog_Click(object sender, EventArgs e)
         {
-            if (txt_Result.InvokeRequired)
+
+            // Thiết lập tiêu đề cho hộp thoại mở thư mục
+
+            string folderPath = Path.GetDirectoryName(Path.GetFullPath(l_logger_Fuction.GetpathFile()));
+
+            try
             {
-                txt_Result.Invoke(new Action(() => txt_Result.Text += item));
+                // Sử dụng Process.Start để mở thư mục bằng Explorer
+                Process.Start("explorer.exe", folderPath);
             }
-            else
+            catch (Exception ex)
             {
-                txt_Result.Text += item;
+                l_logger_Fuction.Log($"Lỗi khi mở thư mục: {ex.Message}");
             }
         }
+
+
+        private string ConvertStringToUtf8Bom(string source)
+        {
+            var data = Encoding.UTF8.GetBytes(source);
+            var result = Encoding.UTF8.GetPreamble().Concat(data).ToArray();
+            var encoder = new UTF8Encoding(true);
+
+            return encoder.GetString(result);
+        }
+
+
+
     }
-}
+ }

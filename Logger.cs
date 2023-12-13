@@ -15,6 +15,7 @@ namespace CheckFormatFile
         {
             this.filePath = filePath;
         }
+        public string GetpathFile() { return filePath; }
 
         public void Log(string message)
         {

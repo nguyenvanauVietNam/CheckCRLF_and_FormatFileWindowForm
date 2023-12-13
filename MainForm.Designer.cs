@@ -1,4 +1,6 @@
 ﻿
+using System.ComponentModel;
+
 namespace CheckFormatFile
 {
     partial class MainForm
@@ -14,6 +16,13 @@ namespace CheckFormatFile
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
+
+            l_logger_Fuction.Log($"End app!");
+            l_logger_CRLF.Log($"End apps");
+            l_logger_Not_CRLF.Log($"End apps");
+            l_logger_UTF8.Log($"End apps");
+            l_logger_Not_UTF8.Log($"End apps");
+
             if (disposing && (components != null))
             {
                 components.Dispose();
@@ -68,18 +77,18 @@ namespace CheckFormatFile
             this.groupBox2.Controls.Add(this.btn_CRLF_OpenFile);
             this.groupBox2.Controls.Add(this.btn_checkCRLF);
             this.groupBox2.Location = new System.Drawing.Point(16, 335);
-            this.groupBox2.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.groupBox2.Margin = new System.Windows.Forms.Padding(4);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.groupBox2.Padding = new System.Windows.Forms.Padding(4);
             this.groupBox2.Size = new System.Drawing.Size(559, 204);
             this.groupBox2.TabIndex = 2;
             this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "Control Area";
+            this.groupBox2.Text = "Check CRLF";
             // 
             // txt_Result
             // 
             this.txt_Result.Location = new System.Drawing.Point(55, 73);
-            this.txt_Result.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.txt_Result.Margin = new System.Windows.Forms.Padding(4);
             this.txt_Result.Multiline = true;
             this.txt_Result.Name = "txt_Result";
             this.txt_Result.ReadOnly = true;
@@ -90,7 +99,7 @@ namespace CheckFormatFile
             // progressBar1
             // 
             this.progressBar1.Location = new System.Drawing.Point(55, 36);
-            this.progressBar1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.progressBar1.Margin = new System.Windows.Forms.Padding(4);
             this.progressBar1.Name = "progressBar1";
             this.progressBar1.Size = new System.Drawing.Size(468, 28);
             this.progressBar1.TabIndex = 3;
@@ -98,27 +107,29 @@ namespace CheckFormatFile
             // btn_OpenLog
             // 
             this.btn_OpenLog.Location = new System.Drawing.Point(392, 169);
-            this.btn_OpenLog.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btn_OpenLog.Margin = new System.Windows.Forms.Padding(4);
             this.btn_OpenLog.Name = "btn_OpenLog";
             this.btn_OpenLog.Size = new System.Drawing.Size(131, 28);
             this.btn_OpenLog.TabIndex = 2;
             this.btn_OpenLog.Text = "Open LogFile";
             this.btn_OpenLog.UseVisualStyleBackColor = true;
+            this.btn_OpenLog.Click += new System.EventHandler(this.btn_OpenLog_Click);
             // 
             // btn_CRLF_OpenFile
             // 
             this.btn_CRLF_OpenFile.Location = new System.Drawing.Point(227, 169);
-            this.btn_CRLF_OpenFile.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btn_CRLF_OpenFile.Margin = new System.Windows.Forms.Padding(4);
             this.btn_CRLF_OpenFile.Name = "btn_CRLF_OpenFile";
             this.btn_CRLF_OpenFile.Size = new System.Drawing.Size(131, 28);
             this.btn_CRLF_OpenFile.TabIndex = 1;
             this.btn_CRLF_OpenFile.Text = "Open File";
             this.btn_CRLF_OpenFile.UseVisualStyleBackColor = true;
+            this.btn_CRLF_OpenFile.Click += new System.EventHandler(this.btn_CRLF_OpenFile_Click);
             // 
             // btn_checkCRLF
             // 
             this.btn_checkCRLF.Location = new System.Drawing.Point(55, 169);
-            this.btn_checkCRLF.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btn_checkCRLF.Margin = new System.Windows.Forms.Padding(4);
             this.btn_checkCRLF.Name = "btn_checkCRLF";
             this.btn_checkCRLF.Size = new System.Drawing.Size(131, 28);
             this.btn_checkCRLF.TabIndex = 0;
@@ -129,7 +140,7 @@ namespace CheckFormatFile
             // l_txtSelectFolder
             // 
             this.l_txtSelectFolder.Location = new System.Drawing.Point(104, 11);
-            this.l_txtSelectFolder.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.l_txtSelectFolder.Margin = new System.Windows.Forms.Padding(4);
             this.l_txtSelectFolder.Name = "l_txtSelectFolder";
             this.l_txtSelectFolder.Size = new System.Drawing.Size(941, 22);
             this.l_txtSelectFolder.TabIndex = 3;
@@ -140,7 +151,7 @@ namespace CheckFormatFile
             // treeView_Seletect
             // 
             this.treeView_Seletect.Location = new System.Drawing.Point(16, 43);
-            this.treeView_Seletect.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.treeView_Seletect.Margin = new System.Windows.Forms.Padding(4);
             this.treeView_Seletect.Name = "treeView_Seletect";
             this.treeView_Seletect.Size = new System.Drawing.Size(1029, 283);
             this.treeView_Seletect.TabIndex = 4;
@@ -148,7 +159,7 @@ namespace CheckFormatFile
             // btn_FormatFile
             // 
             this.btn_FormatFile.Location = new System.Drawing.Point(8, 169);
-            this.btn_FormatFile.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btn_FormatFile.Margin = new System.Windows.Forms.Padding(4);
             this.btn_FormatFile.Name = "btn_FormatFile";
             this.btn_FormatFile.Size = new System.Drawing.Size(131, 28);
             this.btn_FormatFile.TabIndex = 1;
@@ -165,28 +176,29 @@ namespace CheckFormatFile
             this.groupBox1.Controls.Add(this.label2);
             this.groupBox1.Controls.Add(this.btn_FormatFile);
             this.groupBox1.Location = new System.Drawing.Point(583, 335);
-            this.groupBox1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.groupBox1.Margin = new System.Windows.Forms.Padding(4);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.groupBox1.Padding = new System.Windows.Forms.Padding(4);
             this.groupBox1.Size = new System.Drawing.Size(464, 204);
             this.groupBox1.TabIndex = 5;
             this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Format file";
+            this.groupBox1.Text = "Check Endcoding";
             // 
             // btn_Exit
             // 
             this.btn_Exit.Location = new System.Drawing.Point(325, 169);
-            this.btn_Exit.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btn_Exit.Margin = new System.Windows.Forms.Padding(4);
             this.btn_Exit.Name = "btn_Exit";
             this.btn_Exit.Size = new System.Drawing.Size(131, 28);
             this.btn_Exit.TabIndex = 7;
             this.btn_Exit.Text = "Exit";
             this.btn_Exit.UseVisualStyleBackColor = true;
+            this.btn_Exit.Click += new System.EventHandler(this.btn_Exit_Click);
             // 
             // btn_OpenFile
             // 
             this.btn_OpenFile.Location = new System.Drawing.Point(164, 169);
-            this.btn_OpenFile.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btn_OpenFile.Margin = new System.Windows.Forms.Padding(4);
             this.btn_OpenFile.Name = "btn_OpenFile";
             this.btn_OpenFile.Size = new System.Drawing.Size(131, 28);
             this.btn_OpenFile.TabIndex = 6;
@@ -196,7 +208,7 @@ namespace CheckFormatFile
             // txt_FileIgnor
             // 
             this.txt_FileIgnor.Location = new System.Drawing.Point(124, 91);
-            this.txt_FileIgnor.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.txt_FileIgnor.Margin = new System.Windows.Forms.Padding(4);
             this.txt_FileIgnor.Multiline = true;
             this.txt_FileIgnor.Name = "txt_FileIgnor";
             this.txt_FileIgnor.Size = new System.Drawing.Size(331, 52);
@@ -215,8 +227,13 @@ namespace CheckFormatFile
             // comboBox1
             // 
             this.comboBox1.FormattingEnabled = true;
+            this.comboBox1.Items.AddRange(new object[] {
+            "Unicode",
+            "UTF8-BOM",
+            "UTF7",
+            "UTF8"});
             this.comboBox1.Location = new System.Drawing.Point(124, 36);
-            this.comboBox1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.comboBox1.Margin = new System.Windows.Forms.Padding(4);
             this.comboBox1.Name = "comboBox1";
             this.comboBox1.Size = new System.Drawing.Size(331, 24);
             this.comboBox1.TabIndex = 3;
@@ -241,10 +258,9 @@ namespace CheckFormatFile
             this.Controls.Add(this.l_txtSelectFolder);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.label1);
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "MainForm";
             this.Text = "CheckCRLF";
-            this.Load += new System.EventHandler(this.MainForm_Load);
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
             this.groupBox1.ResumeLayout(false);
@@ -273,7 +289,12 @@ namespace CheckFormatFile
         private System.Windows.Forms.Button btn_CRLF_OpenFile;
         private System.Windows.Forms.Button btn_Exit;
         private System.Windows.Forms.Button btn_OpenFile;
-        private Logger l_logger;
+        private Logger l_logger_Fuction;
+        private Logger l_logger_CRLF;
+        private Logger l_logger_Not_CRLF;
+        private Logger l_logger_UTF8;
+        private Logger l_logger_Not_UTF8;
+        private System.Windows.Forms.ToolTip toolTip;
     }
 }
 
