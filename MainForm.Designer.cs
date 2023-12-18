@@ -38,7 +38,8 @@ namespace CheckFormatFile
         /// </summary>
         private void InitializeComponent()
         {
-            this.label1 = new System.Windows.Forms.Label();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
+            this.stactic_label_Browser = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.txt_Result = new System.Windows.Forms.TextBox();
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
@@ -49,6 +50,11 @@ namespace CheckFormatFile
             this.treeView_Seletect = new System.Windows.Forms.TreeView();
             this.btn_FormatFile = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.combobox_Lang = new System.Windows.Forms.ComboBox();
+            this.stactic_label_Lang = new System.Windows.Forms.Label();
+            this.l_btn_CheckUpdate = new System.Windows.Forms.Button();
+            this.l_label_version = new System.Windows.Forms.Label();
+            this.stactic_label_Version = new System.Windows.Forms.Label();
             this.btn_Exit = new System.Windows.Forms.Button();
             this.btn_OpenFile = new System.Windows.Forms.Button();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
@@ -57,15 +63,15 @@ namespace CheckFormatFile
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
-            // label1
+            // stactic_label_Browser
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(16, 11);
-            this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(56, 16);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "Browser";
+            this.stactic_label_Browser.AutoSize = true;
+            this.stactic_label_Browser.Location = new System.Drawing.Point(16, 11);
+            this.stactic_label_Browser.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.stactic_label_Browser.Name = "stactic_label_Browser";
+            this.stactic_label_Browser.Size = new System.Drawing.Size(56, 16);
+            this.stactic_label_Browser.TabIndex = 0;
+            this.stactic_label_Browser.Text = "Browser";
             // 
             // groupBox2
             // 
@@ -148,6 +154,7 @@ namespace CheckFormatFile
             // 
             // treeView_Seletect
             // 
+            this.treeView_Seletect.BackColor = System.Drawing.Color.PaleGreen;
             this.treeView_Seletect.Location = new System.Drawing.Point(16, 43);
             this.treeView_Seletect.Margin = new System.Windows.Forms.Padding(4);
             this.treeView_Seletect.Name = "treeView_Seletect";
@@ -159,7 +166,7 @@ namespace CheckFormatFile
             this.btn_FormatFile.Location = new System.Drawing.Point(8, 169);
             this.btn_FormatFile.Margin = new System.Windows.Forms.Padding(4);
             this.btn_FormatFile.Name = "btn_FormatFile";
-            this.btn_FormatFile.Size = new System.Drawing.Size(131, 28);
+            this.btn_FormatFile.Size = new System.Drawing.Size(162, 28);
             this.btn_FormatFile.TabIndex = 1;
             this.btn_FormatFile.Text = "Start";
             this.btn_FormatFile.UseVisualStyleBackColor = true;
@@ -167,6 +174,11 @@ namespace CheckFormatFile
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.combobox_Lang);
+            this.groupBox1.Controls.Add(this.stactic_label_Lang);
+            this.groupBox1.Controls.Add(this.l_btn_CheckUpdate);
+            this.groupBox1.Controls.Add(this.l_label_version);
+            this.groupBox1.Controls.Add(this.stactic_label_Version);
             this.groupBox1.Controls.Add(this.btn_Exit);
             this.groupBox1.Controls.Add(this.btn_OpenFile);
             this.groupBox1.Controls.Add(this.comboBox1);
@@ -181,6 +193,56 @@ namespace CheckFormatFile
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Check Endcoding";
             // 
+            // combobox_Lang
+            // 
+            this.combobox_Lang.FormattingEnabled = true;
+            this.combobox_Lang.Location = new System.Drawing.Point(250, 119);
+            this.combobox_Lang.Margin = new System.Windows.Forms.Padding(4);
+            this.combobox_Lang.Name = "combobox_Lang";
+            this.combobox_Lang.Size = new System.Drawing.Size(205, 24);
+            this.combobox_Lang.TabIndex = 12;
+            this.combobox_Lang.SelectedIndexChanged += new System.EventHandler(this.combobox_Lang_SelectedIndexChanged);
+            // 
+            // stactic_label_Lang
+            // 
+            this.stactic_label_Lang.AutoSize = true;
+            this.stactic_label_Lang.Location = new System.Drawing.Point(9, 122);
+            this.stactic_label_Lang.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.stactic_label_Lang.Name = "stactic_label_Lang";
+            this.stactic_label_Lang.Size = new System.Drawing.Size(68, 16);
+            this.stactic_label_Lang.TabIndex = 11;
+            this.stactic_label_Lang.Text = "Language";
+            // 
+            // l_btn_CheckUpdate
+            // 
+            this.l_btn_CheckUpdate.Location = new System.Drawing.Point(250, 70);
+            this.l_btn_CheckUpdate.Margin = new System.Windows.Forms.Padding(4);
+            this.l_btn_CheckUpdate.Name = "l_btn_CheckUpdate";
+            this.l_btn_CheckUpdate.Size = new System.Drawing.Size(205, 28);
+            this.l_btn_CheckUpdate.TabIndex = 10;
+            this.l_btn_CheckUpdate.Text = "Check Update";
+            this.l_btn_CheckUpdate.UseVisualStyleBackColor = true;
+            // 
+            // l_label_version
+            // 
+            this.l_label_version.AutoSize = true;
+            this.l_label_version.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.l_label_version.Location = new System.Drawing.Point(120, 76);
+            this.l_label_version.Name = "l_label_version";
+            this.l_label_version.Size = new System.Drawing.Size(50, 22);
+            this.l_label_version.TabIndex = 9;
+            this.l_label_version.Text = "1.0.0";
+            // 
+            // stactic_label_Version
+            // 
+            this.stactic_label_Version.AutoSize = true;
+            this.stactic_label_Version.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.stactic_label_Version.Location = new System.Drawing.Point(8, 73);
+            this.stactic_label_Version.Name = "stactic_label_Version";
+            this.stactic_label_Version.Size = new System.Drawing.Size(81, 22);
+            this.stactic_label_Version.TabIndex = 8;
+            this.stactic_label_Version.Text = "Version :";
+            // 
             // btn_Exit
             // 
             this.btn_Exit.Location = new System.Drawing.Point(325, 169);
@@ -194,7 +256,7 @@ namespace CheckFormatFile
             // 
             // btn_OpenFile
             // 
-            this.btn_OpenFile.Location = new System.Drawing.Point(164, 169);
+            this.btn_OpenFile.Location = new System.Drawing.Point(186, 169);
             this.btn_OpenFile.Margin = new System.Windows.Forms.Padding(4);
             this.btn_OpenFile.Name = "btn_OpenFile";
             this.btn_OpenFile.Size = new System.Drawing.Size(131, 28);
@@ -230,12 +292,14 @@ namespace CheckFormatFile
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.SystemColors.MenuHighlight;
             this.ClientSize = new System.Drawing.Size(1067, 554);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.treeView_Seletect);
             this.Controls.Add(this.l_txtSelectFolder);
             this.Controls.Add(this.groupBox2);
-            this.Controls.Add(this.label1);
+            this.Controls.Add(this.stactic_label_Browser);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "MainForm";
             this.Text = "CheckCRLF";
@@ -250,7 +314,7 @@ namespace CheckFormatFile
 
         #endregion
 
-        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label stactic_label_Browser;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.TextBox l_txtSelectFolder;
         private System.Windows.Forms.TreeView treeView_Seletect;
@@ -271,6 +335,11 @@ namespace CheckFormatFile
         private Logger l_logger_UTF8;
         private Logger l_logger_Not_UTF8;
         private System.Windows.Forms.ToolTip toolTip;
+        private System.Windows.Forms.Label l_label_version;
+        private System.Windows.Forms.Label stactic_label_Version;
+        private System.Windows.Forms.Button l_btn_CheckUpdate;
+        private System.Windows.Forms.Label stactic_label_Lang;
+        private System.Windows.Forms.ComboBox combobox_Lang;
     }
 }
 

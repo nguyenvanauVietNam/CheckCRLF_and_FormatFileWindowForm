@@ -11,6 +11,8 @@ using System.Windows.Forms;
 using System.Configuration;
 using System.Threading;
 using System.Diagnostics;
+using System.Globalization;
+using System.Resources;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace CheckFormatFile
@@ -23,11 +25,10 @@ namespace CheckFormatFile
 
             InitializeComponent();
             treeView_Seletect.AfterSelect += TreeView1_AfterSelect; // Make sure to add this line
-
             // Initialize log directory
             string logFolderPath = Path.Combine(Application.StartupPath, "ApplicationLog");
             EnsureLogDirectoryExists(logFolderPath);
-
+            toolTip = new System.Windows.Forms.ToolTip();
             // Create log file paths
             string timestampSuffix = DateTime.Now.ToString("yyyyMMdd_HHmmss");
             string logFilePath = $"ApplicationLog/AppsLog_{timestampSuffix}.txt";
@@ -43,16 +44,10 @@ namespace CheckFormatFile
             l_logger_UTF8 = new Logger(logFilePath_FormatFile);
             l_logger_Not_UTF8 = new Logger(logFilePath_NotUTF8);
 
-            // Log application start
-            string appVersion = Application.ProductVersion;
-            LogStartApplication(appVersion);
-
+            SetLangApplication();
 
             //cài đặt tooltips
             toolTip = new System.Windows.Forms.ToolTip();
-            toolTip.SetToolTip(btn_CRLF_OpenFile, "Chọn file cần check CRLF. \n Ứng dụng sẽ tự động thực hiện chức năng check CRLF");
-            toolTip.SetToolTip(btn_checkCRLF, "Chọn Folder cần check CRLF trên Treeview sau đó nhấn vào tôi để thực hiện.");
-            toolTip.SetToolTip(btn_OpenLog, "Mở thư mục ghi log để check kết quả check CRLF hoặc kết quả check Endcoding File.");
 
             //Cài đặt Combobox
             comboBox1.SelectedIndex = 1;
@@ -64,14 +59,143 @@ namespace CheckFormatFile
             ShowTreeView(l_txtSelectFolder.Text, treeView_Seletect.Nodes);
         }
 
-        private void LogStartApplication(string appVersion)
+        private void LogStartApplication(string appVersion,string Language)
         {
-            l_logger_Fuction.Log($"Start application version {appVersion}");
+
+            l_logger_Fuction.Log($"Start application version {appVersion} set default language: {Language}");
             l_logger_CRLF.Log($"Start application version {appVersion}");
             l_logger_Not_CRLF.Log($"Start application version {appVersion}");
             l_logger_UTF8.Log($"Start application version {appVersion}");
             l_logger_Not_UTF8.Log($"Start application version {appVersion}");
         }
+        private void SetLangApplication()
+        {
+
+            // Thiết lập ngôn ngữ cho ứng dụng
+            string l_Lang_App =  GetDefaultLanguage();
+            CultureInfo cultureInfo = new CultureInfo(l_Lang_App);
+            // Đổi ngôn ngữ tùy thuộc vào nhu cầu của bạn
+           
+            Thread.CurrentThread.CurrentUICulture = cultureInfo;
+            // loại bỏ vấn đề nhấn vào combobox
+            combobox_Lang.DropDownStyle = ComboBoxStyle.DropDownList;
+            combobox_Lang.Items.Clear();
+            // Log application start
+            string appVersion = Application.ProductVersion;
+            string resourcefile = "";
+            if (l_Lang_App == "ja-JP")
+            {
+                //Tiếng Nhật
+                combobox_Lang.Items.Add("Japanese/日本語");
+                combobox_Lang.Items.Add("English/英語");
+                combobox_Lang.SelectedIndex = 0;
+                LogStartApplication(appVersion, "Japanese/日本語");
+                resourcefile = $"CheckFormatFile.Resources.Resource_MultiLanguage_JPN";
+            }
+            else if(l_Lang_App =="en-US")
+            {
+                //Tiếng Anh
+                combobox_Lang.Items.Add("English/英語");
+                combobox_Lang.Items.Add("Japanese/日本語");
+                combobox_Lang.SelectedIndex = 0;
+                LogStartApplication(appVersion, "English/英語");
+                resourcefile = $"CheckFormatFile.Resources.Resource_MultiLanguage_ENG";
+            }
+            else { }
+            SetLanguageForControlApp(resourcefile);//set lang
+        }
+
+        private void SetLanguageForControlApp(string resourcefile)
+        {
+            try
+            {
+                // Tạo một đối tượng ResourceManager với đường dẫn tệp .resx
+                ResourceManager resourceManager = new ResourceManager(resourcefile, typeof(Program).Assembly);
+                CultureInfo cultureInfo = Thread.CurrentThread.CurrentUICulture;
+
+                // Đọc giá trị từ tệp .resx và set giá trị cho từng con trol trong windows
+                //string value = resourceManager.GetString("Lang_value", cultureInfo);
+                stactic_label_Browser.Text = resourceManager.GetString("Label_Browser", cultureInfo);
+                groupBox2.Text = resourceManager.GetString("Group_CheckCRLF", cultureInfo);
+                groupBox1.Text = resourceManager.GetString("Group_CheckEnCoding", cultureInfo);
+                label2.Text = resourceManager.GetString("label_Extendstion", cultureInfo);
+                stactic_label_Version.Text = resourceManager.GetString("Version_label", cultureInfo);
+                l_label_version.Text = Application.ProductVersion;//application Version
+                stactic_label_Lang.Text = resourceManager.GetString("Lang_label", cultureInfo);
+                //Button
+                l_btn_CheckUpdate.Text = resourceManager.GetString("Button_CheckUpdate", cultureInfo);
+                btn_checkCRLF.Text = resourceManager.GetString("Button_check_CRLF", cultureInfo);
+                btn_CRLF_OpenFile.Text = resourceManager.GetString("Button_OpenFile_CheckCRLF", cultureInfo);
+                btn_OpenLog.Text = resourceManager.GetString("Button_Open_Log", cultureInfo);
+                btn_FormatFile.Text = resourceManager.GetString("Button_Check_Encoding", cultureInfo);
+                btn_OpenFile.Text = resourceManager.GetString("Button_OpenFile_Check_Encoding", cultureInfo);
+                btn_Exit.Text = resourceManager.GetString("Button_Exit", cultureInfo);
+
+                //Tooltips
+                toolTip.RemoveAll(); //remove truoc khi set gia tri
+
+                toolTip.SetToolTip(btn_checkCRLF, resourceManager.GetString("Tooltips_buttoncheck_CRLF", cultureInfo));
+                toolTip.SetToolTip(btn_CRLF_OpenFile, resourceManager.GetString("Tooltips_buttonOpenFile_CheckCRLF", cultureInfo));
+                toolTip.SetToolTip(btn_OpenLog, resourceManager.GetString("Tooltips_buttonOpen_Log", cultureInfo));
+
+
+                toolTip.SetToolTip(btn_FormatFile, resourceManager.GetString("Tooltips_buttonCheck_Encoding", cultureInfo));
+                toolTip.SetToolTip(btn_OpenFile, resourceManager.GetString("Tooltips_buttonOpenFile_Check_Encoding", cultureInfo));
+                toolTip.SetToolTip(btn_Exit, resourceManager.GetString("Tooltips_buttonExit", cultureInfo));
+
+                toolTip.SetToolTip(l_btn_CheckUpdate, resourceManager.GetString("Tooltips_Button_Check_Update", cultureInfo));
+                toolTip.SetToolTip(combobox_Lang, resourceManager.GetString("Tooltips_combobox_Lang", cultureInfo));
+
+                //combobox
+                toolTip.SetToolTip(comboBox1, resourceManager.GetString("Tooltips_Combobox_Encondig", cultureInfo));
+            }
+            catch (Exception ex)
+            {
+                //TODO code    
+            }
+        }
+
+
+        // Đọc giá trị của khóa từ app.config
+        private string GetDefaultLanguage()
+        {
+            string defaultLanguage = ConfigurationManager.AppSettings["DefaultLanguage"];
+            return defaultLanguage;
+        }
+        // ghi giá trị của khóa từ app.config
+        private void SetDefaultLanguage(string key, string value)
+        {
+            try
+            {
+                // Load cấu hình từ file app.config
+                Configuration configuration = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+
+                // Kiểm tra xem khóa có tồn tại không
+                if (configuration.AppSettings.Settings[key] != null)
+                {
+                    // Cập nhật giá trị cho khóa
+                    configuration.AppSettings.Settings[key].Value = value;
+
+                    // Lưu cấu hình mới
+                    configuration.Save(ConfigurationSaveMode.Modified);
+
+                    // Force một refresh để áp dụng các thay đổi
+                    ConfigurationManager.RefreshSection("appSettings");
+                }
+                else
+                {
+                    // Nếu khóa không tồn tại, bạn có thể tạo mới nếu cần thiết
+                    configuration.AppSettings.Settings.Add(key, value);
+                    configuration.Save(ConfigurationSaveMode.Modified);
+                    ConfigurationManager.RefreshSection("appSettings");
+                }
+            }
+            catch (ConfigurationErrorsException)
+            {
+               //Todo
+            }
+        
+    }
 
         private void ShowTreeView(string folderPath, TreeNodeCollection nodes)
         {
@@ -518,7 +642,7 @@ namespace CheckFormatFile
             }
         }
 
-        static string GetFileEncoding(string filePath)
+        private string GetFileEncoding(string filePath)
         {
             using (StreamReader reader = new StreamReader(filePath, true))
             {
@@ -639,6 +763,42 @@ namespace CheckFormatFile
             l_logger_Fuction.Log($"Encoding check completed\r\n");
             l_logger_Not_UTF8.Log($" check completed\r\n");
             l_logger_UTF8.Log($" check completed\r\n");
+        }
+
+        private void combobox_Lang_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            // Đổi ngôn ngữ tùy thuộc vào nhu cầu của bạn
+            CultureInfo culture = Thread.CurrentThread.CurrentUICulture;
+            if (combobox_Lang.Text == "English/英語")
+            {
+                if(culture.Name == "en-US")
+                {
+                    //Không làm gì hết
+                } else
+                {
+                    //ngược lại set tiếng Nhật cho app
+                    SetDefaultLanguage("DefaultLanguage", "en-US");
+                    SetLangApplication();
+                }    
+            }  
+            else if(combobox_Lang.Text == "Japanese/日本語")
+            {
+                if (culture.Name == "ja-JP")
+                {
+                    //Không làm gì hết
+                }
+                else
+                {
+                    //ngược lại set tiếng Nhật cho app
+                    SetDefaultLanguage("DefaultLanguage", "ja-JP");
+                    //đọc lại file
+                    SetLangApplication();
+                }
+            }
+            else
+            { 
+                //Không làm gì hết
+            }
         }
     }
  }
